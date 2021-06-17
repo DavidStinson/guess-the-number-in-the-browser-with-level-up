@@ -1,30 +1,25 @@
 /*-------------------------------- Constants --------------------------------*/
 
-const kazoo = new Audio("audio/kazoo.wav");
-
 /*-------------------------------- Variables --------------------------------*/
 
-let secretNum, currentGuess, guessList, isWinner;
+let secretNum, guessList, isWinner;
 
 /*------------------------ Cached Element References ------------------------*/
 
-const titleEl = document.getElementById("title");
-const messageEl = document.getElementById("message");
-const guessesEl = document.getElementById("prevGuesses");
-const guessBtn = document.getElementById("guessButton");
-const resetBtn = document.getElementById("resetButton");
-const guessInput = document.getElementById("guessInput");
+const messageEl = document.querySelector("#message");
+const guessesEl = document.querySelector("#prevGuesses");
+const form = document.querySelector("form");
+const resetBtn = document.querySelector("#resetButton");
+const guessInput = document.querySelector("#guessInput");
 
 /*----------------------------- Event Listeners -----------------------------*/
 
-resetBtn.addEventListener("click", function () {
+resetBtn.addEventListener("click", function (evt) {
   init();
 });
 
-guessBtn.addEventListener("click", function () {
-  if (guessList.length === 0) {
-    guessesEl.innerText = "Previous Guesses:";
-  }
+form.addEventListener("submit", function (evt) {
+  evt.preventDefault()
   if (isWinner === false) {
     checkGuess(parseInt(guessInput.value));
   }
@@ -35,59 +30,74 @@ guessBtn.addEventListener("click", function () {
 init();
 
 function init() {
-  titleEl.className = "";
-  messageEl.className = "";
-  guessInput.value = "";
-  guessesEl.innerText = "";
-  messageEl.innerText = "Please enter a number between 1 and 100";
-  guessList = [];
-  isWinner = false;
-  secretNum = Math.floor(Math.random() * 100) + 1;
-  render();
+  messageEl.className = ""
+  guessInput.value = ""
+  guessesEl.innerText = ""
+  document.getElementById("prevGuessesMsg").innerText = ""
+  messageEl.innerText = "Please enter a number from 1 to 100"
+  resetBtn.setAttribute("hidden", true)
+
+  guessList = []
+  isWinner = false
+  secretNum = Math.floor(Math.random() * 100 + 1)
+  render()
 }
 
 function checkGuess(guess) {
   guessInput.value = "";
-  if (guess < 1 || guess > 100 || isNaN(guess)) {
-    messageEl.innerText = "Whoops! Please try a number from 1 to 100.";
+  if (isNaN(guess) || guess < 1 || guess > 100) {
+    renderError("Whoops! Please enter a number from 1 to 100.")
+    return
   } else if (guess === secretNum) {
-    titleEl.className = "animate__animated animate__bounce";
-    messageEl.className = "winner";
-    isWinner = true;
-    guessList.push(guess)
-    if (guessList.length === 1) {
-      messageEl.innerText = `WOW, LOOK AT THAT! You found the number in one guess!`;
-    } else {
-      console.log("this runs!")
-      messageEl.innerText = `Congratulations! You found the number in ${guessList.length} guesses!`;
-    }
-  } else if (guess <= secretNum) {
-    messageEl.className = "low";
-    messageEl.innerText = `${guess} is too low, please try again!`;
-    guessList.push(guess);
-  } else {
-    messageEl.className = "high";
-    messageEl.innerText = `${guess} is too high, please try again!`;
-    guessList.push(guess);
-  }
-  render(guess);
+    isWinner = true
+  } 
+  guessList.push(guess)
+  render()
 }
 
-function render(guess) {
-  if (guess > secretNum) {
-    let div = document.createElement("div");
-    div.innerText = guess;
-    div.className = "high";
-    guessesEl.appendChild(div);
-  } else if (guess < secretNum) {
-    let div = document.createElement("div");
-    div.innerText = guess;
-    div.className = "low";
-    guessesEl.appendChild(div);
-  } else if (guess === secretNum) {
-    let div = document.createElement("div");
-    div.innerText = guess;
-    div.className = "winner";
-    guessesEl.appendChild(div);
+function render() {
+  const lastGuess = guessList[guessList.length - 1]
+  const div = document.createElement("div")
+  div.innerText = lastGuess
+
+  if (guessList.length === 1) {
+    document.getElementById("prevGuessesMsg").innerText = "Previous Guesses:"
+    resetBtn.removeAttribute("hidden")
   }
+
+  if (isWinner) {
+    renderWin(div)
+    return
+  } else if ((lastGuess > secretNum) || (lastGuess < secretNum)) {
+    renderGuess(div, lastGuess)
+  }
+}
+
+function renderWin(div) {
+  messageEl.className = "winner";
+  div.className = "winner";
+  guessesEl.appendChild(div);
+  if (guessList.length === 1) {
+    messageEl.innerText = `You found the number in one guess!`;
+  } else {
+    messageEl.innerText = `Congratulations! You found the number ${secretNum} in ${guessList.length} guesses!`;
+  }
+}
+
+function renderGuess(div, lastGuess) {
+  if (lastGuess < secretNum) {
+    messageEl.className = "low";
+    div.className = "low";
+    messageEl.innerText = `${lastGuess} is too low, please try again!`;
+  } else if (lastGuess > secretNum) {
+    messageEl.className = "high";
+    div.className = "high";
+    messageEl.innerText = `${lastGuess} is too high, please try again!`;
+  }
+  guessesEl.appendChild(div);
+}
+
+function renderError(error) {
+  messageEl.className = "error";
+  messageEl.innerText = error;
 }

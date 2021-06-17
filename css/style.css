@@ -14,18 +14,24 @@ body {
 
 #guessInput {
   padding: 5px 5px 5px 5px;
-  margin-right: 16px;
   border-radius: .25rem
 }
 
-#prevGuesses {
+#prevGuessesMsg {
   margin-top: 24px;
+  font-size: 24px;
+}
+
+#prevGuesses {
+  margin-top: 16px;
   font-size: 20px;
 }
 
+#guessButton,
 #resetButton {
-  margin-top: 24px;
+  margin-left: 24px;
 }
+
 
 .high {
   color: #ffb04b;
@@ -37,4 +43,8 @@ body {
 
 .winner {
   color: #98d174;
+}
+
+.error {
+  color: #f13814
 }
