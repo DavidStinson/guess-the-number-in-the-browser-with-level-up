@@ -1,5 +1,7 @@
 /*-------------------------------- Constants --------------------------------*/
 
+const kazoo = new Audio("../audio/kazoo.wav")
+
 /*-------------------------------- Variables --------------------------------*/
 
 let secretNum, guessList, isWinner
@@ -10,6 +12,7 @@ const form = document.querySelector("form")
 const guessInput = document.querySelector("#guessInput")
 const guessesEl = document.querySelector("#prevGuesses")
 const messageEl = document.querySelector("#message")
+const titleEl = document.getElementById('title');
 
 /*----------------------------- Event Listeners -----------------------------*/
 
@@ -27,6 +30,7 @@ form.addEventListener("submit", function (evt) {
 init()
 
 function init() {
+  titleEl.className = "";
   messageEl.className = ""
   guessesEl.innerText = ""
   messageEl.innerText = "Please enter a number from 1 to 100"
@@ -70,6 +74,7 @@ function render() {
 
 function renderWin(div) {
   messageEl.className = "winner"
+  titleEl.className = 'animate__animated animate__bounce'
   div.className = "winner"
   guessesEl.appendChild(div)
   if (guessList.length === 1) {
@@ -77,6 +82,9 @@ function renderWin(div) {
   } else {
     messageEl.innerText = `Congratulations! You found the number ${secretNum} in ${guessList.length} guesses!`
   }
+  setTimeout(function(){
+    kazoo.play();
+  },1000);
 }
 
 function renderGuess(div, lastGuess) {
