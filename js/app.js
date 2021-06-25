@@ -82,6 +82,7 @@ function renderWin(div) {
   } else {
     messageEl.innerText = `Congratulations! You found the number ${secretNum} in ${guessList.length} guesses!`
   }
+  confetti.start(2500)
   setTimeout(function(){
     kazoo.play();
   },1000);
